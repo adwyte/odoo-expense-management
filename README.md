@@ -87,7 +87,7 @@ This application provides a comprehensive authentication and user management sys
 - `GET /` - API information
 - `GET /health` - Health check
 
-## Setup Instructions
+## 🚀 Quick Start
 
 ### 1. Environment Setup
 ```bash
@@ -98,8 +98,10 @@ cd odoo-expense-management
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install backend dependencies
+cd src/backend
 pip install -r requirements.txt
+cd ../..
 ```
 
 ### 2. Database Setup
@@ -136,18 +138,25 @@ REFRESH_TOKEN_EXPIRE_DAYS=30
 ### 4. Initialize Database
 ```bash
 # Initialize database tables
-python init_db.py
-
-# Or reset database if needed
-python init_db.py reset
+python start.py setup-db
 ```
 
 ### 5. Run Application
 ```bash
-# Start the FastAPI application
-python app.py
+# Start the FastAPI backend
+python start.py start
 
-# Or using uvicorn directly
+# In another terminal, start frontend
+cd src/frontend
+npm install
+npm run dev
+```
+
+### 6. Access the Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Alternative API Docs**: http://localhost:8000/redoc
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 
 # Application will be available at:

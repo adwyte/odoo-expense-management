@@ -23,10 +23,12 @@ SECRET_KEY=your-secret-key-here
 ```bash
 # Create virtual environment (if not exists)
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\\Scripts\\activate
 
-# Install dependencies
+# Install backend dependencies
+cd src/backend
 pip install -r requirements.txt
+cd ../..
 ```
 
 ### 4. Set Up Database
@@ -34,14 +36,14 @@ pip install -r requirements.txt
 # Create PostgreSQL database
 createdb your_database_name
 
-# Set up tables
-python migrate_db.py setup
+# Set up tables (from project root)
+python start.py setup-db
 ```
 
 ### 5. Start Application
 ```bash
-# Backend
-python main.py
+# Backend (from project root)
+python start.py start
 
 # Frontend (new terminal)
 cd src/frontend
@@ -52,14 +54,18 @@ npm run dev
 ## 🔧 Database Commands
 
 ```bash
-# Set up database tables
-python migrate_db.py setup
+# Set up database tables (from project root)
+python start.py setup-db
 
-# Check existing tables
-python migrate_db.py tables
+# Start backend server
+python start.py start
+
+# Check existing tables (from src/backend directory)
+cd src/backend
+python scripts/migrate_db.py tables
 
 # Show help
-python migrate_db.py help
+python start.py help
 ```
 
 ## 🆘 Troubleshooting
