@@ -1,5 +1,5 @@
 import uvicorn
-from app import create_app
+from src.backend.app.utils.app import create_app
 
 # Create the FastAPI app instance
 app = create_app()

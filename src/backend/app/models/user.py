@@ -1,10 +1,10 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Text
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from passlib.context import CryptContext
 import uuid
-from app.database import Base
+from src.backend.app.utils.app.database import Base
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

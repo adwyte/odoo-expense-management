@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 import pycountry
-from app.database import Base
+from src.backend.app.utils.app.database import Base
 
 class Company(Base):
     __tablename__ = 'companies'

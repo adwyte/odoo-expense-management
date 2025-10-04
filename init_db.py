@@ -3,9 +3,8 @@
 Database initialization script for Odoo Expense Management (FastAPI)
 """
 import sys
-from app.database import engine, Base
-from app.models.user import User
-from app.models.company import Company
+from src.backend.app.utils.app import engine, Base
+
 
 def init_database():
     """Initialize the database with tables"""
