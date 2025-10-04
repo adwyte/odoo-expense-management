@@ -1,9 +1,22 @@
 from logging.config import fileConfig
+import sys
+import os
+from pathlib import Path
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+# Add the project root to the Python path
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+# Import your models and database configuration
+from src.backend.app.utils.app.database import Base
+from src.backend.app.utils.app.config import settings
+from src.backend.app.models.user import User
+from src.backend.app.models.company import Company
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,9 +29,10 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
+
+# Set the database URL from settings
+config.set_main_option('sqlalchemy.url', settings.database_url)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
