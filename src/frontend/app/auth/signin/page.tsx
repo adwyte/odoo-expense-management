@@ -34,15 +34,16 @@ export default function SigninPage() {
       
       // Get user info to determine role and redirect
       const userInfo = await apiService.getCurrentUser(response.access_token)
-      
+
       // Redirect based on user role
-      if (userInfo.user.role === "admin") {
+      if (userInfo.role === "admin") {
         router.push("/admin/approval-rules")
-      } else if (userInfo.user.role === "manager") {
+      } else if (userInfo.role === "manager") {
         router.push("/manager")
       } else {
         router.push("/employee")
       }
+
     } catch (error) {
       setError(error instanceof Error ? error.message : "Login failed")
     } finally {
