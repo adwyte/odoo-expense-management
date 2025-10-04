@@ -22,7 +22,7 @@ type Expense = {
 
 const categories = ["Travel", "Food", "Office Supplies", "Software", "Other"];
 const paidByOptions = ["Company Card", "Personal Card", "Cash"];
-const currencies = ["USD", "EUR", "GBP", "INR", "JPY"];
+const currencies = ["INR", "EUR", "GBP", "USD", "JPY"];
 
 export default function EmployeePage() {
   const [showForm, setShowForm] = useState(false);
@@ -37,7 +37,7 @@ export default function EmployeePage() {
     paidBy: "",
     remarks: "",
     amount: "",
-    currency: "USD",
+    currency: "INR",
     detailedDescription: "",
   });
 
@@ -68,7 +68,7 @@ export default function EmployeePage() {
     e.preventDefault();
     const newExpense: Expense = {
       id: crypto.randomUUID?.() ?? Date.now().toString(),
-      employee: "John Doe",
+      employee: "Adwyte Karandikar",
       description: formData.description,
       date: formData.date,
       category: formData.category,
