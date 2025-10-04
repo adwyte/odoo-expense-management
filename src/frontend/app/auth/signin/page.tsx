@@ -5,7 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiService, type LoginData } from "../../../lib/api"
+import { apiService, type LoginData } from "@/lib/api";
+
 
 export default function SigninPage() {
   const router = useRouter()
