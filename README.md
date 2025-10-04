@@ -26,6 +26,8 @@ This application provides a comprehensive authentication and user management sys
 - **Employee Capabilities**:
   - View own profile
   - Change password
+ 
+*Video Link*: https://drive.google.com/file/d/188EFTg4r43LoR6lHXRl9fcKkI3Y9wxVK/view?usp=sharing
 
 ## Tech Stack
 
