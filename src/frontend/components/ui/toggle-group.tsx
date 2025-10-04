@@ -1,35 +1,50 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
-import { type VariantProps } from 'class-variance-authority'
-
-import { cn } from '@/lib/utils'
-import { toggleVariants } from '@/components/ui/toggle'
+import * as React from "react";
+import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
+import { type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+import { toggleVariants } from "@/components/ui/toggle";
 
 const ToggleGroupContext = React.createContext<
-  VariantProps<typeof toggleVariants>
->({
-  size: 'default',
-  variant: 'default',
-})
+  VariantProps<typeof toggleVariants> | undefined
+>(undefined);
 
-function ToggleGroup({
-  className,
-  variant,
-  size,
-  children,
-  ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
+type BaseProps = VariantProps<typeof toggleVariants> & {
+  className?: string;
+  children?: React.ReactNode;
+};
+
+// 🧩 Function overloads to satisfy Radix's strict typing
+function ToggleGroup(
+  props: Omit<
+    React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>,
+    "type"
+  > &
+    BaseProps & { type: "single" },
+  ref: React.Ref<HTMLDivElement>
+): React.ReactElement | null;
+function ToggleGroup(
+  props: Omit<
+    React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>,
+    "type"
+  > &
+    BaseProps & { type: "multiple" },
+  ref: React.Ref<HTMLDivElement>
+): React.ReactElement | null;
+
+// ✅ Implementation
+function ToggleGroup(
+  { className, variant, size, children, type, ...props }: any,
+  ref: React.Ref<HTMLDivElement>
+) {
   return (
     <ToggleGroupPrimitive.Root
-      data-slot="toggle-group"
-      data-variant={variant}
-      data-size={size}
+      ref={ref}
+      type={type}
       className={cn(
-        'group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs',
-        className,
+        "inline-flex items-center justify-center rounded-md border border-gray-200 bg-white shadow-sm",
+        className
       )}
       {...props}
     >
@@ -37,37 +52,41 @@ function ToggleGroup({
         {children}
       </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
-  )
+  );
 }
 
-function ToggleGroupItem({
-  className,
-  children,
-  variant,
-  size,
-  ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
-  VariantProps<typeof toggleVariants>) {
-  const context = React.useContext(ToggleGroupContext)
+const ForwardedToggleGroup = React.forwardRef(ToggleGroup);
+ForwardedToggleGroup.displayName = "ToggleGroup";
 
+interface ToggleGroupItemProps
+  extends React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>,
+    VariantProps<typeof toggleVariants> {
+  className?: string;
+}
+
+const ToggleGroupItem = React.forwardRef<
+  React.ElementRef<typeof ToggleGroupPrimitive.Item>,
+  ToggleGroupItemProps
+>(({ className, variant, size, children, ...props }, ref) => {
+  const context = React.useContext(ToggleGroupContext);
   return (
     <ToggleGroupPrimitive.Item
-      data-slot="toggle-group-item"
-      data-variant={context.variant || variant}
-      data-size={context.size || size}
+      ref={ref}
       className={cn(
         toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
+          variant: context?.variant || variant,
+          size: context?.size || size,
         }),
-        'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l',
-        className,
+        "rounded-none border-l-0 first:rounded-l-md last:rounded-r-md first:border-l",
+        className
       )}
       {...props}
     >
       {children}
     </ToggleGroupPrimitive.Item>
-  )
-}
+  );
+});
 
-export { ToggleGroup, ToggleGroupItem }
+ToggleGroupItem.displayName = "ToggleGroupItem";
+
+export { ForwardedToggleGroup as ToggleGroup, ToggleGroupItem };
