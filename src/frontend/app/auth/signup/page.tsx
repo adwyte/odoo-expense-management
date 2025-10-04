@@ -2,26 +2,28 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiService, type SignupData } from "../../../lib/api"
+import { apiService, type SignupData, type CountryResponse } from "../../../lib/api"
 
-const countries = [
-  { code: "US", name: "United States", currency: "USD" },
-  { code: "GB", name: "United Kingdom", currency: "GBP" },
-  { code: "DE", name: "Germany", currency: "EUR" },
-  { code: "FR", name: "France", currency: "EUR" },
-  { code: "IN", name: "India", currency: "INR" },
-  { code: "JP", name: "Japan", currency: "JPY" },
-  { code: "CA", name: "Canada", currency: "CAD" },
-  { code: "AU", name: "Australia", currency: "AUD" },
+const fallbackCountries = [
+  { country_code: "US", country_name: "United States", currency_code: "USD", currency_name: "US Dollar" },
+  { country_code: "GB", country_name: "United Kingdom", currency_code: "GBP", currency_name: "British Pound" },
+  { country_code: "DE", country_name: "Germany", currency_code: "EUR", currency_name: "Euro" },
+  { country_code: "FR", country_name: "France", currency_code: "EUR", currency_name: "Euro" },
+  { country_code: "IN", country_name: "India", currency_code: "INR", currency_name: "Indian Rupee" },
+  { country_code: "JP", country_name: "Japan", currency_code: "JPY", currency_name: "Japanese Yen" },
+  { country_code: "CA", country_name: "Canada", currency_code: "CAD", currency_name: "Canadian Dollar" },
+  { country_code: "AU", country_name: "Australia", currency_code: "AUD", currency_name: "Australian Dollar" },
 ]
 
 export default function SignupPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [countries, setCountries] = useState<CountryResponse[]>(fallbackCountries)
+  const [loadingCountries, setLoadingCountries] = useState(true)
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -32,6 +34,23 @@ export default function SignupPage() {
     company_email: "",
     country_code: "",
   })
+
+  // Load countries on component mount
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        const fetchedCountries = await apiService.getCountries()
+        setCountries(fetchedCountries)
+      } catch (error) {
+        console.warn('Failed to load countries, using fallback:', error)
+        // Keep fallback countries if API fails
+      } finally {
+        setLoadingCountries(false)
+      }
+    }
+
+    loadCountries()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -177,8 +196,8 @@ export default function SignupPage() {
           >
             <option value="">Select Country</option>
             {countries.map((country) => (
-              <option key={country.code} value={country.code}>
-                {country.name} ({country.currency})
+              <option key={country.country_code} value={country.country_code}>
+                {country.country_name} ({country.currency_code})
               </option>
             ))}
           </select>

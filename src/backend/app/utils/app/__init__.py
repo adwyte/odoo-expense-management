@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.backend.app.api.routers.auth import router as auth_router
 from src.backend.app.api.routers.users import router as users_router
 from src.backend.app.api.routers.companies import router as companies_router
+from src.backend.app.api.routers.countries import router as countries_router
 
 def create_app():
     app = FastAPI(
@@ -26,6 +27,7 @@ def create_app():
     app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
     app.include_router(users_router, prefix="/api/users", tags=["User Management"])
     app.include_router(companies_router, prefix="/api/companies", tags=["Company"])
+    app.include_router(countries_router, prefix="/api/countries", tags=["Countries & Currencies"])
     
     @app.get("/")
     def root():
