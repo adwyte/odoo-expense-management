@@ -5,24 +5,48 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { apiService, type LoginData } from "../../../lib/api"
 
 export default function SigninPage() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "employee" as "admin" | "manager" | "employee",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Signing in:", formData)
-    if (formData.role === "admin") {
-      router.push("/admin/approval-rules")
-    } else if (formData.role === "manager") {
-      router.push("/manager")
-    } else {
-      router.push("/employee")
+    setError("")
+    setLoading(true)
+    
+    try {
+      const loginData: LoginData = {
+        email: formData.email,
+        password: formData.password,
+      }
+
+      const response = await apiService.login(loginData)
+      
+      // Save tokens
+      apiService.saveTokens(response.access_token, response.refresh_token)
+      
+      // Get user info to determine role and redirect
+      const userInfo = await apiService.getCurrentUser(response.access_token)
+      
+      // Redirect based on user role
+      if (userInfo.user.role === "admin") {
+        router.push("/admin/approval-rules")
+      } else if (userInfo.user.role === "manager") {
+        router.push("/manager")
+      } else {
+        router.push("/employee")
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Login failed")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -31,38 +55,25 @@ export default function SigninPage() {
       alert("Please enter your email address")
       return
     }
-    const randomPassword = Math.random().toString(36).slice(-8)
-    console.log("Sending random password:", randomPassword, "to", formData.email)
-    alert(`Password reset email sent to ${formData.email}`)
+    alert(`Password reset functionality will be implemented soon for ${formData.email}`)
   }
 
   return (
     <div className="p-8 max-w-md mx-auto">
-      <h2 className="text-xl mb-6">Signin</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm">Role</label>
-          <select
-            value={formData.role}
-            onChange={(e) => setFormData({ ...formData, role: e.target.value as "admin" | "manager" | "employee" })}
-            className="px-3 py-2 border border-border bg-bg text-fg"
-            style={{ borderRadius: "3px" }}
-            required
-          >
-            <option value="employee">Employee</option>
-            <option value="manager">Manager</option>
-            <option value="admin">Admin</option>
-          </select>
+      <h2 className="text-xl mb-6">Sign In</h2>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
         </div>
-
+      )}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-sm">Email</label>
           <input
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="px-3 py-2 border border-border bg-bg text-fg"
-            style={{ borderRadius: "3px" }}
+            className="px-3 py-2 border border-gray-300 rounded"
             required
           />
         </div>
@@ -73,28 +84,35 @@ export default function SigninPage() {
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="px-3 py-2 border border-border bg-bg text-fg"
-            style={{ borderRadius: "3px" }}
+            className="px-3 py-2 border border-gray-300 rounded"
             required
           />
         </div>
 
-        <button type="submit" className="px-4 py-2 border border-border mt-2" style={{ borderRadius: "3px" }}>
-          Login
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 text-white font-medium rounded disabled:opacity-50 hover:bg-blue-700"
+        >
+          {loading ? "Signing In..." : "Sign In"}
         </button>
 
-        <div className="flex flex-col gap-2 text-sm text-center mt-2">
-          <div className="text-muted">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="text-fg underline">
-              Signup
-            </Link>
-          </div>
-          <button type="button" onClick={handleForgotPassword} className="text-muted underline">
-            Forgot password?
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Forgot Password?
           </button>
         </div>
       </form>
+
+      <div className="mt-4 text-center">
+        <Link href="/auth/signup" className="text-blue-600 hover:underline">
+          Don't have an account? Sign up
+        </Link>
+      </div>
     </div>
   )
 }
