@@ -35,13 +35,10 @@ export default function SigninPage() {
     }
   };
 
-  const handleForgotPassword = () => {
-    if (!formData.email) {
-      alert("Please enter your email address first.");
-      return;
-    }
-    alert(`Password reset will be implemented for ${formData.email}`);
-  };
+ const handleForgotPassword = () => {
+  const emailParam = formData.email ? `?email=${encodeURIComponent(formData.email)}` : "";
+  router.push(`/auth/reset-password${emailParam}`);
+};
 
   return (
     <div className="mx-auto flex min-h-[80dvh] max-w-md items-center p-6">
